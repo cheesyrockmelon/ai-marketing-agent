@@ -17,7 +17,7 @@ XAI_API_KEY = os.environ["XAI_API_KEY"]
 SCRAPECREATORS_API_KEY = os.environ["SCRAPECREATORS_API_KEY"]
 FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
-RESEARCH_TOPIC = "AI tools to optimize marketing workflows"
+RESEARCH_TOPIC = "Claude Code and AI tools for marketing"
 
 
 # ---------------------------------------------------------------------------
@@ -40,11 +40,10 @@ def search_twitter(topic: str) -> dict:
                         "role": "user",
                         "content": (
                             f"Today is {today}. Search X/Twitter for the most viral and trending "
-                            f"posts about '{topic}' from the LAST 24 HOURS ONLY. "
-                            f"Focus on: AI tools automating marketing workflows, content creation AI, "
-                            f"scheduling automation, AI for ads, AI analytics, and social media AI tools. "
-                            f"What specific tools are people talking about RIGHT NOW? "
-                            f"Include engagement numbers (likes, reposts, views) and direct post URLs."
+                            f"posts from the LAST 24 HOURS about: Claude Code being used for marketing, "
+                            f"AI coding tools for marketers, using Claude/ChatGPT/AI agents to run marketing workflows, "
+                            f"and AI tools that automate marketing tasks (content, ads, email, social media). "
+                            f"What are people sharing RIGHT NOW? Include engagement numbers and direct post URLs."
                         ),
                     }
                 ],
@@ -125,7 +124,7 @@ def search_reddit(topic: str) -> dict:
 def search_instagram(topic: str) -> dict:
     reels = []
     cutoff = int(datetime.now(timezone.utc).timestamp()) - 86400  # 24h ago
-    queries = ["AI marketing automation", "AI marketing tools"]
+    queries = ["Claude Code marketing", "AI tools marketing automation"]
     try:
         for q in queries:
             resp = requests.get(
@@ -268,30 +267,33 @@ def synthesize_brief(results: dict) -> str:
 {json.dumps(web.get("articles", []), indent=2)}
 """.strip()
 
-    prompt = f"""Today is {today}. You are scanning social media data for trending AI marketing content.
+    prompt = f"""Today is {today}. You are scanning social media for trending content about Claude Code and AI tools used in marketing.
 
-Extract the top 5-6 trending topics from the research below. For each topic:
-- One short headline (5-8 words max)
-- The direct URL(s) to the actual post on X, Instagram, Reddit, or YouTube — nothing else
+Extract the top 5-6 trending topics from the research below. For each topic output:
+- A short bold headline (5-8 words)
+- One sentence summary: what's happening and why it matters for marketers
+- The direct URL(s) to the actual post on X, Instagram, Reddit, or YouTube
 
-Output format for Telegram HTML (nothing else, no intro, no commentary):
+Output format for Telegram HTML (no intro text, start straight with the header):
 
-<b>AI Marketing — {today}</b>
+<b>Claude Code & AI Marketing — {today}</b>
 
-<b>1. [Topic headline]</b>
+<b>1. [Headline]</b>
+[One sentence: what it is + why it matters for marketers.]
 <a href="URL">X</a> · <a href="URL">Instagram</a>
 
-<b>2. [Topic headline]</b>
+<b>2. [Headline]</b>
+[One sentence summary.]
 <a href="URL">Reddit</a>
 
-(etc. — only include platforms where you have a real URL from the data)
+(repeat for each topic)
 
 RULES:
 - Only use URLs that appear verbatim in the research data — never invent or guess URLs
-- If a topic has no direct post URL, skip it entirely
-- No descriptions, no analysis, no commentary — just headline + links
-- Prefer X and Instagram links over web articles
-- Max 6 topics, keep total message under 800 characters
+- If a topic has no direct post URL, skip it
+- Summary must be ONE sentence max — scannable at a glance
+- Prefer X and Instagram links; Reddit and YouTube as fallback
+- Max 6 topics, keep total under 1500 characters
 
 Research data:
 {research_dump}"""
