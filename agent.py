@@ -268,37 +268,30 @@ def synthesize_brief(results: dict) -> str:
 {json.dumps(web.get("articles", []), indent=2)}
 """.strip()
 
-    prompt = f"""You are a senior marketing strategist. Today is {today}.
+    prompt = f"""Today is {today}. You are scanning social media data for trending AI marketing content.
 
-Write a daily intelligence brief on the FRESHEST trending topics in AI-powered marketing workflows.
-This brief will be sent via Telegram. Use Telegram HTML only:
-  <b>bold</b> for headers, <i>italic</i> for emphasis, <a href="URL">text</a> for links
-  Plain dashes for bullets, blank line between sections.
+Extract the top 5-6 trending topics from the research below. For each topic:
+- One short headline (5-8 words max)
+- The direct URL(s) to the actual post on X, Instagram, Reddit, or YouTube — nothing else
 
-CRITICAL: Only include content that appears to be from the LAST 24-48 HOURS. If a source looks older, skip it.
+Output format for Telegram HTML (nothing else, no intro, no commentary):
 
-Structure (keep total under 3800 characters):
+<b>AI Marketing — {today}</b>
 
-<b>AI Marketing Intel — {today}</b>
+<b>1. [Topic headline]</b>
+<a href="URL">X</a> · <a href="URL">Instagram</a>
 
-<b>TOP TRENDS</b>
-4-5 key trends from TODAY. For each: 1-2 sentences + source platform. Flag anything on 2+ platforms as a strong signal.
+<b>2. [Topic headline]</b>
+<a href="URL">Reddit</a>
 
-<b>HOT CONTENT</b>
-3 most engaging posts/videos right now. Include the direct link and one sentence on why it's resonating.
-Pull from Instagram, YouTube, Reddit, or X — wherever the freshest content came from.
+(etc. — only include platforms where you have a real URL from the data)
 
-<b>TOOLS IN FOCUS</b>
-Specific AI tools people are actively discussing. Name the tool and what it does.
-
-<b>TODAY'S TAKE</b>
-1 concrete thing to do or test this week based on what's trending.
-
-Rules:
-- Punchy and direct — no filler
-- Real links only (from the data) — never invent URLs
-- Source every claim: (X), (Reddit r/sub), (@instagramuser), (YouTube), (Web)
-- If a lane had no data, silently skip it
+RULES:
+- Only use URLs that appear verbatim in the research data — never invent or guess URLs
+- If a topic has no direct post URL, skip it entirely
+- No descriptions, no analysis, no commentary — just headline + links
+- Prefer X and Instagram links over web articles
+- Max 6 topics, keep total message under 800 characters
 
 Research data:
 {research_dump}"""
