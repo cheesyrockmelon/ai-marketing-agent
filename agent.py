@@ -41,8 +41,8 @@ def search_twitter(topic: str) -> dict:
                         "content": (
                             f"Today is {today}. Search X/Twitter for the most viral and trending "
                             f"posts from the LAST 24 HOURS about: Claude Code being used for marketing, "
-                            f"AI coding tools for marketers, using Claude/ChatGPT/AI agents to run marketing workflows, "
-                            f"and AI tools that automate marketing tasks (content, ads, email, social media). "
+                            f"Anthropic Claude AI tools for marketers, using Claude agents to automate marketing workflows. "
+                            f"Focus specifically on Claude and Anthropic tools — not generic AI marketing. "
                             f"What are people sharing RIGHT NOW? Include engagement numbers and direct post URLs."
                         ),
                     }
@@ -133,8 +133,10 @@ def search_instagram(topic: str) -> dict:
                 params={"query": q, "limit": 15},
                 timeout=30,
             )
+            print(f"  [Instagram] query={q!r} status={resp.status_code} body={resp.text[:200]}")
             if resp.status_code == 200:
-                items = resp.json().get("reels", resp.json().get("data", []))
+                data = resp.json()
+                items = data.get("reels", data.get("data", data.get("items", [])))
                 for r in items:
                     views = r.get("video_view_count", 0) or 0
                     likes = r.get("like_count", 0) or 0
@@ -168,9 +170,10 @@ def search_instagram(topic: str) -> dict:
 def search_youtube(topic: str) -> dict:
     today = datetime.now(timezone.utc).strftime("%B %d, %Y")
     videos = []
+    year = datetime.now().year
     queries = [
-        f"site:youtube.com AI marketing automation tools {today}",
-        f"site:youtube.com AI marketing workflow {datetime.now().year}",
+        f"site:youtube.com Claude Code marketing {year}",
+        f"site:youtube.com AI tools marketing automation {year}",
     ]
     try:
         for q in queries:
@@ -183,6 +186,7 @@ def search_youtube(topic: str) -> dict:
                 json={"query": q, "limit": 4},
                 timeout=30,
             )
+            print(f"  [YouTube] query={q!r} status={resp.status_code}")
             if resp.status_code == 200:
                 for r in resp.json().get("data", []):
                     url = r.get("url", "")
@@ -214,7 +218,7 @@ def search_web(topic: str) -> dict:
                 "Content-Type": "application/json",
             },
             json={
-                "query": f"AI marketing tools workflow automation latest news {today}",
+                "query": f"Claude Code AI marketing tools automation {today}",
                 "limit": 5,
                 "scrapeOptions": {"formats": ["markdown"], "onlyMainContent": True},
             },
@@ -289,6 +293,7 @@ Output format for Telegram HTML (no intro text, start straight with the header):
 (repeat for each topic)
 
 RULES:
+- Only include topics specifically about Claude Code or Anthropic AI tools used in marketing — skip generic AI marketing news
 - Only use URLs that appear verbatim in the research data — never invent or guess URLs
 - If a topic has no direct post URL, skip it
 - Summary must be ONE sentence max — scannable at a glance
