@@ -34,7 +34,7 @@ def search_twitter(topic: str) -> dict:
                 "Content-Type": "application/json",
             },
             json={
-                "model": "grok-4-1-fast",
+                "model": "grok-3-fast",
                 "input": [
                     {
                         "role": "user",
